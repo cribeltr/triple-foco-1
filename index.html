@@ -1,0 +1,1346 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Triple Foco — App de productividad que combina la Matriz de Eisenhower, el Método Ivy Lee y Cómete el Sapo (Brian Tracy).">
+<meta name="theme-color" content="#16a34a">
+<title>Triple Foco · Clasifica · Planifica · Ejecuta</title>
+<style>
+  /* ============================================================
+     Variables de tema
+     ============================================================ */
+  :root {
+    --bg: #eef1f6;
+    --bg-grad-1: #eef1f6;
+    --bg-grad-2: #e6ebf2;
+    --surface: #ffffff;
+    --surface-2: #f7f9fc;
+    --surface-3: #eef2f7;
+    --border: #e1e6ee;
+    --border-strong: #cdd5e1;
+    --text: #1c2430;
+    --muted: #687385;
+    --muted-2: #98a1b0;
+    --brand: #16a34a;
+    --brand-d: #128a3f;
+    --brand-soft: #e6f6ec;
+    --accent: #6d5cf6;
+
+    /* Cuadrantes Eisenhower */
+    --q1: #ef4444; --q1-soft: #fdecec; --q1-ring: #f7c7c7;
+    --q2: #2f7de1; --q2-soft: #e7f0fc; --q2-ring: #bcd6f6;
+    --q3: #e08c00; --q3-soft: #fbf1de; --q3-ring: #f1d8a6;
+    --q4: #7a8699; --q4-soft: #eef0f4; --q4-ring: #d4d9e2;
+
+    --shadow-sm: 0 1px 2px rgba(20,30,50,.06), 0 1px 3px rgba(20,30,50,.05);
+    --shadow-md: 0 4px 14px rgba(20,30,50,.08), 0 2px 6px rgba(20,30,50,.05);
+    --shadow-lg: 0 18px 50px rgba(20,30,50,.16);
+    --radius: 14px;
+    --radius-sm: 10px;
+    --radius-lg: 20px;
+    --ff: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji", sans-serif;
+  }
+  html[data-theme="dark"] {
+    --bg: #0f141b;
+    --bg-grad-1: #0f141b;
+    --bg-grad-2: #131a23;
+    --surface: #1a212c;
+    --surface-2: #202836;
+    --surface-3: #28303f;
+    --border: #2b3442;
+    --border-strong: #3a4456;
+    --text: #e8edf4;
+    --muted: #9aa6b6;
+    --muted-2: #6f7c8e;
+    --brand: #2bbf63;
+    --brand-d: #25a957;
+    --brand-soft: #16291d;
+    --accent: #8b7bff;
+
+    --q1: #f56b6b; --q1-soft: #2a1a1d; --q1-ring: #5a2c30;
+    --q2: #5a9bf0; --q2-soft: #16222f; --q2-ring: #2b4360;
+    --q3: #e8a52e; --q3-soft: #2a2316; --q3-ring: #574828;
+    --q4: #8b97a9; --q4-soft: #222833; --q4-ring: #3a4456;
+
+    --shadow-sm: 0 1px 2px rgba(0,0,0,.4);
+    --shadow-md: 0 6px 18px rgba(0,0,0,.45);
+    --shadow-lg: 0 20px 55px rgba(0,0,0,.6);
+  }
+
+  /* ============================================================
+     Base
+     ============================================================ */
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    font-family: var(--ff);
+    color: var(--text);
+    background: linear-gradient(160deg, var(--bg-grad-1), var(--bg-grad-2));
+    background-attachment: fixed;
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
+  }
+  button { font-family: inherit; cursor: pointer; }
+  h1,h2,h3,h4 { margin: 0; line-height: 1.25; }
+  ::selection { background: var(--brand); color: #fff; }
+  :focus-visible { outline: 3px solid color-mix(in srgb, var(--brand) 55%, transparent); outline-offset: 2px; border-radius: 6px; }
+
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 18px 80px; }
+
+  /* ============================================================
+     Cabecera
+     ============================================================ */
+  header.app {
+    position: sticky; top: 0; z-index: 30;
+    background: color-mix(in srgb, var(--surface) 86%, transparent);
+    backdrop-filter: saturate(1.4) blur(10px);
+    -webkit-backdrop-filter: saturate(1.4) blur(10px);
+    border-bottom: 1px solid var(--border);
+  }
+  .header-inner {
+    max-width: 1180px; margin: 0 auto; padding: 12px 18px;
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  }
+  .brand { display: flex; align-items: center; gap: 12px; margin-right: auto; }
+  .logo {
+    width: 42px; height: 42px; flex: none; border-radius: 12px;
+    display: grid; place-items: center;
+    background: linear-gradient(150deg, var(--brand), #0ea5a3);
+    box-shadow: var(--shadow-md);
+  }
+  .logo svg { width: 24px; height: 24px; }
+  .brand-text h1 { font-size: 1.18rem; letter-spacing: -.02em; }
+  .brand-text p {
+    margin: 1px 0 0; font-size: .74rem; font-weight: 600; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--muted);
+  }
+  .header-meta { display: flex; align-items: center; gap: 8px; }
+  .date-pill {
+    font-size: .82rem; font-weight: 600; color: var(--muted);
+    background: var(--surface-2); border: 1px solid var(--border);
+    padding: 7px 12px; border-radius: 999px; white-space: nowrap;
+    text-transform: capitalize;
+  }
+  .icon-btn {
+    width: 40px; height: 40px; border-radius: 11px; border: 1px solid var(--border);
+    background: var(--surface-2); color: var(--text); font-size: 1.05rem;
+    display: grid; place-items: center; transition: .15s;
+  }
+  .icon-btn:hover { background: var(--surface-3); transform: translateY(-1px); }
+
+  /* ============================================================
+     Stepper / pestañas
+     ============================================================ */
+  .stepper {
+    display: flex; gap: 10px; margin: 22px 0 24px; flex-wrap: wrap;
+  }
+  .step {
+    flex: 1 1 220px; min-width: 0;
+    display: flex; align-items: center; gap: 13px; text-align: left;
+    padding: 14px 16px; border-radius: var(--radius);
+    background: var(--surface); border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm); transition: .18s; position: relative;
+  }
+  .step:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+  .step .num {
+    width: 34px; height: 34px; flex: none; border-radius: 10px;
+    display: grid; place-items: center; font-weight: 800; font-size: 1rem;
+    background: var(--surface-3); color: var(--muted); transition: .18s;
+  }
+  .step .st-txt { min-width: 0; }
+  .step .st-txt strong { display: block; font-size: .96rem; letter-spacing: -.01em; }
+  .step .st-txt span { font-size: .78rem; color: var(--muted); }
+  .step.active {
+    border-color: color-mix(in srgb, var(--brand) 55%, var(--border));
+    background: linear-gradient(180deg, var(--brand-soft), var(--surface));
+  }
+  .step.active .num { background: var(--brand); color: #fff; }
+  .step.active .st-txt strong { color: var(--brand-d); }
+  html[data-theme="dark"] .step.active .st-txt strong { color: var(--brand); }
+  .step .badge {
+    position: absolute; top: 10px; right: 12px;
+    font-size: .72rem; font-weight: 800; color: var(--muted-2);
+  }
+
+  /* ============================================================
+     Componentes comunes
+     ============================================================ */
+  .view { animation: fade .25s ease; }
+  @keyframes fade { from { opacity: 0; transform: translateY(6px);} to {opacity:1; transform:none;} }
+  [hidden] { display: none !important; }
+
+  .view-head { margin-bottom: 18px; }
+  .view-head h2 { font-size: 1.5rem; letter-spacing: -.02em; }
+  .view-head p { margin: 6px 0 0; color: var(--muted); max-width: 70ch; font-size: .94rem; }
+
+  .btn {
+    border: 1px solid var(--border); background: var(--surface); color: var(--text);
+    padding: 9px 15px; border-radius: 10px; font-weight: 650; font-size: .9rem;
+    display: inline-flex; align-items: center; gap: 7px; transition: .15s; white-space: nowrap;
+  }
+  .btn:hover { background: var(--surface-3); transform: translateY(-1px); }
+  .btn:disabled { opacity: .45; cursor: not-allowed; transform: none; }
+  .btn.primary { background: var(--brand); border-color: var(--brand); color: #fff; }
+  .btn.primary:hover { background: var(--brand-d); }
+  .btn.ghost { background: transparent; }
+  .btn.sm { padding: 6px 10px; font-size: .82rem; border-radius: 8px; }
+
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); box-shadow: var(--shadow-sm);
+  }
+
+  /* Barra para añadir tareas */
+  .add-bar {
+    display: flex; gap: 10px; flex-wrap: wrap; align-items: stretch;
+    padding: 12px; margin-bottom: 20px;
+  }
+  .add-bar input[type=text] {
+    flex: 1 1 280px; min-width: 0; border: 1px solid var(--border);
+    background: var(--surface-2); color: var(--text);
+    padding: 11px 14px; border-radius: 10px; font-size: .96rem;
+  }
+  .add-bar input[type=text]:focus { outline: none; border-color: var(--brand); background: var(--surface); }
+  .seg {
+    display: flex; gap: 4px; background: var(--surface-2);
+    border: 1px solid var(--border); border-radius: 10px; padding: 4px;
+  }
+  .seg button {
+    border: none; background: transparent; color: var(--muted);
+    padding: 7px 11px; border-radius: 7px; font-weight: 700; font-size: .82rem; transition: .12s;
+  }
+  .seg button[data-q] .dot { display:inline-block; width:8px;height:8px;border-radius:50%;margin-right:5px; vertical-align: middle;}
+  .seg button.on { color: #fff; }
+  .seg button[data-q="q1"].on { background: var(--q1); }
+  .seg button[data-q="q2"].on { background: var(--q2); }
+  .seg button[data-q="q3"].on { background: var(--q3); }
+  .seg button[data-q="q4"].on { background: var(--q4); }
+
+  /* ============================================================
+     Matriz de Eisenhower
+     ============================================================ */
+  .matrix-shell { display: grid; grid-template-columns: 30px 1fr; gap: 10px; }
+  .axis-y {
+    display: grid; grid-template-rows: 1fr 1fr; gap: 12px;
+  }
+  .axis-y span {
+    writing-mode: vertical-rl; transform: rotate(180deg);
+    display: grid; place-items: center; font-size: .72rem; font-weight: 800;
+    letter-spacing: .14em; text-transform: uppercase; color: var(--muted-2);
+  }
+  .matrix-col { display: grid; grid-template-rows: auto 1fr; gap: 10px; min-width: 0; }
+  .axis-x { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .axis-x span {
+    text-align: center; font-size: .72rem; font-weight: 800;
+    letter-spacing: .14em; text-transform: uppercase; color: var(--muted-2);
+  }
+  .matrix { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .quadrant {
+    background: var(--surface); border: 1px solid var(--border);
+    border-top: 3px solid var(--qc); border-radius: var(--radius);
+    padding: 14px; min-height: 200px; display: flex; flex-direction: column;
+    transition: .15s;
+  }
+  .quadrant.drop-on { border-color: var(--qc); box-shadow: 0 0 0 3px color-mix(in srgb, var(--qc) 25%, transparent); }
+  .q-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .q-emoji {
+    width: 34px; height: 34px; border-radius: 9px; flex: none;
+    display: grid; place-items: center; font-size: 1.05rem; background: var(--qsoft);
+  }
+  .q-titles { min-width: 0; margin-right: auto; }
+  .q-titles strong { display: block; font-size: .98rem; color: var(--qc); letter-spacing: -.01em; }
+  .q-titles small { font-size: .76rem; color: var(--muted); }
+  .q-count {
+    font-size: .8rem; font-weight: 800; color: var(--muted);
+    background: var(--surface-3); border-radius: 999px; padding: 3px 9px; min-width: 26px; text-align: center;
+  }
+  .q-list { display: flex; flex-direction: column; gap: 8px; flex: 1; }
+  .q-empty {
+    margin: auto 0; text-align: center; color: var(--muted-2); font-size: .85rem;
+    padding: 18px 8px; border: 1.5px dashed var(--border-strong); border-radius: 10px;
+  }
+
+  /* Tarjeta de tarea */
+  .task {
+    display: flex; align-items: flex-start; gap: 10px;
+    background: var(--surface-2); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); padding: 9px 10px; transition: .14s;
+  }
+  .task:hover { border-color: var(--border-strong); box-shadow: var(--shadow-sm); }
+  .task.dragging { opacity: .5; }
+  .task.done { opacity: .62; }
+  .task.done .task-text { text-decoration: line-through; color: var(--muted); }
+  .check {
+    appearance: none; -webkit-appearance: none; flex: none; margin-top: 1px;
+    width: 20px; height: 20px; border-radius: 6px; border: 2px solid var(--border-strong);
+    background: var(--surface); display: grid; place-items: center; transition: .12s; cursor: pointer;
+  }
+  .check:hover { border-color: var(--brand); }
+  .check:checked { background: var(--brand); border-color: var(--brand); }
+  .check:checked::after { content: "✓"; color: #fff; font-size: .8rem; font-weight: 900; }
+  .task-body { flex: 1; min-width: 0; }
+  .task-text { font-size: .92rem; word-break: break-word; cursor: text; }
+  .task-meta { display: flex; gap: 6px; align-items: center; margin-top: 5px; flex-wrap: wrap; }
+  .chip {
+    font-size: .68rem; font-weight: 800; letter-spacing: .04em; text-transform: uppercase;
+    padding: 2px 7px; border-radius: 999px;
+  }
+  .chip.plan { background: var(--brand-soft); color: var(--brand-d); }
+  html[data-theme="dark"] .chip.plan { color: var(--brand); }
+  .chip.frog { background: #e8f8ec; color: #15803d; }
+  html[data-theme="dark"] .chip.frog { background: #163021; color: #4ade80; }
+  .task-actions { display: flex; gap: 2px; flex: none; }
+  .mini {
+    width: 28px; height: 28px; border: none; background: transparent; color: var(--muted-2);
+    border-radius: 7px; display: grid; place-items: center; font-size: .9rem; transition: .12s;
+  }
+  .mini:hover { background: var(--surface-3); color: var(--text); }
+  .mini.add-plan:hover { color: var(--brand); }
+  .mini.del:hover { color: var(--q1); }
+  .mini.on { color: var(--brand); }
+
+  /* ============================================================
+     Plan del día (Ivy Lee)
+     ============================================================ */
+  .plan-grid { display: grid; grid-template-columns: 1fr 1.15fr; gap: 18px; align-items: start; }
+  .panel { padding: 16px; }
+  .panel-head { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .panel-head h3 { font-size: 1.02rem; }
+  .panel-head .sub { font-size: .8rem; color: var(--muted); margin-left: auto; }
+  .counter-ring {
+    margin-left: auto; font-weight: 800; font-size: .85rem;
+    padding: 4px 12px; border-radius: 999px; background: var(--surface-3); color: var(--muted);
+  }
+  .counter-ring.full { background: var(--brand-soft); color: var(--brand-d); }
+  html[data-theme="dark"] .counter-ring.full { color: var(--brand); }
+
+  .avail-list { display: flex; flex-direction: column; gap: 8px; max-height: 540px; overflow-y: auto; padding-right: 4px; }
+  .avail {
+    display: flex; align-items: center; gap: 10px;
+    border: 1px solid var(--border); border-left: 4px solid var(--qc);
+    background: var(--surface-2); border-radius: 10px; padding: 9px 11px;
+  }
+  .avail .av-text { flex: 1; min-width: 0; font-size: .9rem; word-break: break-word; }
+  .avail .av-q { font-size: .68rem; font-weight: 800; color: var(--qc); text-transform: uppercase; letter-spacing: .04em; }
+
+  .plan-list { display: flex; flex-direction: column; gap: 9px; min-height: 80px; }
+  .plan-item {
+    display: flex; align-items: center; gap: 11px;
+    background: var(--surface-2); border: 1px solid var(--border);
+    border-radius: 12px; padding: 11px 12px; transition: .14s;
+  }
+  .plan-item.dragging { opacity: .45; }
+  .plan-item.over { box-shadow: 0 -3px 0 var(--brand); }
+  .plan-item.is-frog {
+    border-color: color-mix(in srgb, var(--brand) 50%, var(--border));
+    background: linear-gradient(100deg, var(--brand-soft), var(--surface-2));
+  }
+  .rank {
+    width: 30px; height: 30px; flex: none; border-radius: 9px; font-weight: 800;
+    display: grid; place-items: center; background: var(--surface-3); color: var(--muted);
+  }
+  .plan-item.is-frog .rank { background: var(--brand); color: #fff; }
+  .grip { color: var(--muted-2); cursor: grab; font-size: 1.1rem; user-select: none; }
+  .grip:active { cursor: grabbing; }
+  .plan-text { flex: 1; min-width: 0; font-size: .94rem; word-break: break-word; }
+  .frog-tag { font-size: 1.1rem; }
+  .ord-btns { display: flex; flex-direction: column; gap: 1px; }
+  .ord-btns button { width: 24px; height: 18px; line-height: 1; padding: 0; font-size: .7rem; }
+
+  .plan-empty, .panel-empty {
+    text-align: center; color: var(--muted-2); font-size: .9rem;
+    padding: 30px 16px; border: 1.5px dashed var(--border-strong); border-radius: 12px;
+  }
+  .plan-tip {
+    margin-top: 14px; font-size: .82rem; color: var(--muted);
+    background: var(--surface-2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 11px 13px; display: flex; gap: 9px;
+  }
+  .plan-tip b { color: var(--text); }
+
+  /* ============================================================
+     Foco / Cómete el sapo
+     ============================================================ */
+  .foco-wrap { display: grid; gap: 18px; }
+  .progress-card { padding: 16px 18px; }
+  .progress-top { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .progress-top h3 { font-size: 1.02rem; margin-right: auto; }
+  .pct { font-weight: 800; font-size: 1.05rem; color: var(--brand-d); }
+  html[data-theme="dark"] .pct { color: var(--brand); }
+  .bar { height: 12px; border-radius: 999px; background: var(--surface-3); overflow: hidden; }
+  .bar > i { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--brand), #0ea5a3); transition: width .4s ease; }
+  .progress-sub { margin-top: 9px; font-size: .84rem; color: var(--muted); }
+
+  .frog-card {
+    padding: 22px; border-radius: var(--radius-lg); position: relative; overflow: hidden;
+    background:
+      radial-gradient(120% 140% at 100% 0%, color-mix(in srgb, var(--brand) 16%, transparent), transparent 60%),
+      var(--surface);
+    border: 1px solid color-mix(in srgb, var(--brand) 35%, var(--border));
+  }
+  .frog-card.eaten { background: var(--surface); border-color: var(--border); }
+  .frog-label {
+    display: inline-flex; align-items: center; gap: 7px; font-size: .74rem; font-weight: 800;
+    letter-spacing: .12em; text-transform: uppercase; color: var(--brand-d);
+    background: var(--brand-soft); padding: 5px 11px; border-radius: 999px;
+  }
+  html[data-theme="dark"] .frog-label { color: var(--brand); }
+  .frog-main { display: flex; align-items: center; gap: 18px; margin-top: 14px; flex-wrap: wrap; }
+  .frog-emoji { font-size: 3.1rem; line-height: 1; filter: drop-shadow(0 6px 10px rgba(0,0,0,.12)); }
+  .frog-info { flex: 1; min-width: 200px; }
+  .frog-info h2 { font-size: 1.45rem; letter-spacing: -.02em; word-break: break-word; }
+  .frog-info h2.struck { text-decoration: line-through; color: var(--muted); }
+  .frog-info p { margin: 5px 0 0; color: var(--muted); font-size: .9rem; }
+  .frog-actions { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; align-items: center; }
+
+  /* Cronómetro de foco */
+  .timer {
+    display: flex; align-items: center; gap: 10px; margin-left: auto;
+    background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; padding: 6px 8px 6px 14px;
+  }
+  .timer .tnum { font-variant-numeric: tabular-nums; font-weight: 800; font-size: 1.15rem; letter-spacing: .02em; }
+  .timer .tctrl { display: flex; gap: 4px; }
+
+  .uplist { padding: 16px 18px; }
+  .uplist h3 { font-size: 1rem; margin-bottom: 12px; }
+  .up-item {
+    display: flex; align-items: center; gap: 12px; padding: 11px 4px;
+    border-bottom: 1px solid var(--border);
+  }
+  .up-item:last-child { border-bottom: none; }
+  .up-rank { width: 26px; height: 26px; flex: none; border-radius: 8px; background: var(--surface-3); color: var(--muted); display: grid; place-items: center; font-weight: 800; font-size: .82rem; }
+  .up-item.done .up-rank { background: var(--brand-soft); color: var(--brand-d); }
+  html[data-theme="dark"] .up-item.done .up-rank { color: var(--brand); }
+  .up-item.next .up-rank { background: var(--brand); color: #fff; }
+  .up-text { flex: 1; min-width: 0; font-size: .94rem; word-break: break-word; }
+  .up-item.done .up-text { text-decoration: line-through; color: var(--muted); }
+  .up-now { font-size: .68rem; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: var(--brand-d); background: var(--brand-soft); padding: 3px 8px; border-radius: 999px; }
+  html[data-theme="dark"] .up-now { color: var(--brand); }
+
+  .empty-foco { text-align: center; padding: 50px 20px; }
+  .empty-foco .big { font-size: 3rem; }
+  .empty-foco h2 { margin: 12px 0 6px; }
+  .empty-foco p { color: var(--muted); max-width: 46ch; margin: 0 auto 18px; }
+
+  /* ============================================================
+     Toast
+     ============================================================ */
+  #toast {
+    position: fixed; left: 50%; bottom: 26px; transform: translate(-50%, 30px);
+    background: #1c2430; color: #fff; padding: 12px 18px; border-radius: 12px;
+    font-size: .9rem; font-weight: 600; box-shadow: var(--shadow-lg);
+    opacity: 0; pointer-events: none; transition: .28s; z-index: 100; max-width: 90vw;
+    display: flex; align-items: center; gap: 9px;
+  }
+  #toast.show { opacity: 1; transform: translate(-50%, 0); }
+  html[data-theme="dark"] #toast { background: #2b3442; border: 1px solid var(--border-strong); }
+
+  /* ============================================================
+     Modales
+     ============================================================ */
+  dialog {
+    border: none; border-radius: var(--radius-lg); padding: 0; width: min(560px, 94vw);
+    background: var(--surface); color: var(--text); box-shadow: var(--shadow-lg);
+  }
+  dialog::backdrop { background: rgba(15,20,27,.5); backdrop-filter: blur(3px); }
+  .modal-head { display: flex; align-items: center; gap: 10px; padding: 18px 20px; border-bottom: 1px solid var(--border); }
+  .modal-head h3 { font-size: 1.15rem; margin-right: auto; }
+  .modal-body { padding: 20px; max-height: 70vh; overflow-y: auto; }
+  .modal-foot { padding: 14px 20px; border-top: 1px solid var(--border); display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; }
+  .field { margin-bottom: 16px; }
+  .field label { display: block; font-size: .82rem; font-weight: 700; color: var(--muted); margin-bottom: 6px; }
+  .field textarea, .field input {
+    width: 100%; border: 1px solid var(--border); background: var(--surface-2); color: var(--text);
+    border-radius: 10px; padding: 10px 12px; font-size: .94rem; font-family: inherit; resize: vertical;
+  }
+  .field textarea:focus, .field input:focus { outline: none; border-color: var(--brand); }
+  .q-pick { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .q-pick button {
+    text-align: left; border: 1.5px solid var(--border); background: var(--surface-2);
+    padding: 10px 12px; border-radius: 10px; transition: .12s; color: var(--text);
+  }
+  .q-pick button .qp-t { font-weight: 800; font-size: .88rem; display: flex; align-items: center; gap: 7px; }
+  .q-pick button .qp-s { font-size: .75rem; color: var(--muted); }
+  .q-pick button.sel { border-color: var(--qc); background: var(--qsoft); }
+
+  .method {
+    border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; margin-bottom: 12px;
+    background: var(--surface-2);
+  }
+  .method h4 { display: flex; align-items: center; gap: 9px; font-size: 1rem; margin-bottom: 6px; }
+  .method h4 .m-num { width: 26px; height: 26px; border-radius: 8px; background: var(--brand); color:#fff; display:grid;place-items:center; font-size:.85rem; font-weight:800; flex:none; }
+  .method p { margin: 0; font-size: .88rem; color: var(--muted); }
+  .method p + p { margin-top: 6px; }
+
+  /* ============================================================
+     Responsive
+     ============================================================ */
+  @media (max-width: 860px) {
+    .plan-grid { grid-template-columns: 1fr; }
+    .timer { margin-left: 0; }
+  }
+  @media (max-width: 680px) {
+    .matrix { grid-template-columns: 1fr; }
+    .axis-x { grid-template-columns: 1fr; }
+    .axis-x span:last-child { display: none; }
+    .matrix-shell { grid-template-columns: 1fr; }
+    .axis-y { display: none; }
+    .stepper .step { flex-basis: 100%; }
+    .brand-text p { display: none; }
+    .frog-info h2 { font-size: 1.2rem; }
+  }
+  @media (max-width: 460px) {
+    .date-pill { display: none; }
+    .add-bar input[type=text] { flex-basis: 100%; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+
+<header class="app">
+  <div class="header-inner">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.4" fill="#fff" stroke="none"/>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <h1>Triple Foco</h1>
+        <p>Clasifica · Planifica · Ejecuta</p>
+      </div>
+    </div>
+    <div class="header-meta">
+      <span class="date-pill" id="datePill"></span>
+      <button class="icon-btn" id="helpBtn" title="¿Cómo funciona?" aria-label="Ayuda">?</button>
+      <button class="icon-btn" id="themeBtn" title="Cambiar tema" aria-label="Cambiar tema">🌙</button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- Stepper / navegación -->
+  <nav class="stepper" id="stepper" aria-label="Flujo de trabajo">
+    <button class="step active" data-view="matriz">
+      <span class="num">1</span>
+      <span class="st-txt"><strong>Matriz de Eisenhower</strong><span>Clasifica por urgencia e importancia</span></span>
+      <span class="badge" id="badge-matriz"></span>
+    </button>
+    <button class="step" data-view="plan">
+      <span class="num">2</span>
+      <span class="st-txt"><strong>Plan del día · Ivy Lee</strong><span>Elige y ordena tus 6 tareas</span></span>
+      <span class="badge" id="badge-plan"></span>
+    </button>
+    <button class="step" data-view="foco">
+      <span class="num">3</span>
+      <span class="st-txt"><strong>Cómete el sapo</strong><span>Ejecuta una a una, empezando por la #1</span></span>
+      <span class="badge" id="badge-foco"></span>
+    </button>
+  </nav>
+
+  <!-- =================== VISTA 1: MATRIZ =================== -->
+  <section class="view" id="view-matriz">
+    <div class="view-head">
+      <h2>Matriz de Eisenhower</h2>
+      <p>Anota todo lo que tienes en mente y clasifícalo según su <b>urgencia</b> e <b>importancia</b>. Las tareas <b>importantes</b> (cuadrantes 1 y 2) serán las candidatas para tu plan diario.</p>
+    </div>
+
+    <div class="add-bar card">
+      <input type="text" id="taskInput" placeholder="Nueva tarea… (p. ej. «Preparar informe trimestral»)" autocomplete="off" maxlength="220">
+      <div class="seg" id="qSeg" role="group" aria-label="Cuadrante">
+        <button data-q="q1" class="on"><span class="dot" style="background:var(--q1)"></span>Hazlo ya</button>
+        <button data-q="q2"><span class="dot" style="background:var(--q2)"></span>Planifica</button>
+        <button data-q="q3"><span class="dot" style="background:var(--q3)"></span>Delega</button>
+        <button data-q="q4"><span class="dot" style="background:var(--q4)"></span>Elimina</button>
+      </div>
+      <button class="btn primary" id="addBtn">＋ Añadir</button>
+    </div>
+
+    <div class="matrix-shell">
+      <div class="axis-y" aria-hidden="true">
+        <span>Importante</span>
+        <span>No importante</span>
+      </div>
+      <div class="matrix-col">
+        <div class="axis-x" aria-hidden="true"><span>Urgente</span><span>No urgente</span></div>
+        <div class="matrix" id="matrix"><!-- cuadrantes inyectados --></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================== VISTA 2: PLAN =================== -->
+  <section class="view" id="view-plan" hidden>
+    <div class="view-head">
+      <h2>Plan del día · Método Ivy Lee</h2>
+      <p>Al final de la jornada, elige las <b>6 tareas más importantes</b> para mañana y <b>ordénalas por prioridad real</b>. Trabajarás en ellas de una en una, sin saltarte el orden.</p>
+    </div>
+    <div class="plan-grid">
+      <div class="card panel">
+        <div class="panel-head">
+          <h3>Tareas disponibles</h3>
+          <span class="sub">de tu matriz</span>
+        </div>
+        <div class="avail-list" id="availList"></div>
+      </div>
+
+      <div class="card panel">
+        <div class="panel-head">
+          <h3>Tu plan</h3>
+          <span class="counter-ring" id="planCounter">0/6</span>
+        </div>
+        <div class="plan-list" id="planList"></div>
+        <div class="plan-tip">
+          <span>💡</span>
+          <span>La tarea <b>#1</b> es tu <b>🐸 Sapo</b>: la más importante y difícil. Arrástrala arriba del todo para comértela primero mañana.</span>
+        </div>
+        <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap;">
+          <button class="btn" id="newDayBtn" title="Archiva lo completado y conserva lo pendiente">🌅 Empezar nuevo día</button>
+          <button class="btn ghost sm" id="goFocoBtn">Ir a ejecutar →</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================== VISTA 3: FOCO =================== -->
+  <section class="view" id="view-foco" hidden>
+    <div class="view-head">
+      <h2>Cómete el sapo</h2>
+      <p>«Si tienes que comerte un sapo, hazlo a primera hora.» — Brian Tracy. Empieza por tu tarea #1 y avanza <b>una a una</b>. Sin multitarea.</p>
+    </div>
+    <div class="foco-wrap" id="focoWrap"></div>
+  </section>
+
+</div>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<!-- Modal: editar tarea -->
+<dialog id="editModal">
+  <form method="dialog" id="editForm">
+    <div class="modal-head"><h3>Editar tarea</h3></div>
+    <div class="modal-body">
+      <div class="field">
+        <label for="editText">Descripción</label>
+        <textarea id="editText" rows="2" maxlength="220"></textarea>
+      </div>
+      <div class="field">
+        <label for="editNotes">Notas (opcional)</label>
+        <textarea id="editNotes" rows="3" maxlength="500" placeholder="Detalles, primer paso, contexto…"></textarea>
+      </div>
+      <div class="field">
+        <label>Cuadrante</label>
+        <div class="q-pick" id="editQPick"></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn ghost" id="editCancel">Cancelar</button>
+      <button type="submit" class="btn primary">Guardar</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- Modal: ayuda / metodologías -->
+<dialog id="helpModal">
+  <div class="modal-head">
+    <h3>🎯 Cómo funciona Triple Foco</h3>
+  </div>
+  <div class="modal-body">
+    <p style="margin-top:0; color:var(--muted); font-size:.92rem;">Triple Foco encadena tres metodologías probadas en un único flujo: de la claridad a la acción.</p>
+    <div class="method">
+      <h4><span class="m-num">1</span> Matriz de Eisenhower</h4>
+      <p>Clasifica cada tarea según dos ejes: <b>urgencia</b> e <b>importancia</b>. Obtienes cuatro cuadrantes: <b>Hazlo ya</b>, <b>Planifica</b>, <b>Delega</b> y <b>Elimina</b>. Sirve para ganar claridad y separar el ruido de lo que de verdad importa.</p>
+    </div>
+    <div class="method">
+      <h4><span class="m-num">2</span> Método Ivy Lee</h4>
+      <p>Cada noche, elige las <b>6 tareas más importantes</b> del día siguiente y <b>ordénalas por prioridad</b>. Solo seis: la restricción te obliga a decidir. Al día siguiente trabajas de una en una, sin saltar a la segunda hasta terminar la primera.</p>
+    </div>
+    <div class="method">
+      <h4><span class="m-num">3</span> Cómete el sapo (Brian Tracy)</h4>
+      <p>Tu «sapo» es la tarea más importante y difícil: la #1 de tu plan. <b>Cómetela a primera hora</b>, cuando tu energía es máxima. Si la terminas, el resto del día será cuesta abajo.</p>
+    </div>
+    <p style="font-size:.88rem; color:var(--muted);">Tus datos se guardan únicamente en este navegador (localStorage). Nada se envía a ningún servidor.</p>
+  </div>
+  <div class="modal-foot" style="justify-content:space-between;">
+    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+      <button class="btn ghost sm" id="exportBtn">⤓ Exportar</button>
+      <button class="btn ghost sm" id="importBtn">⤒ Importar</button>
+      <button class="btn ghost sm" id="resetBtn" style="color:var(--q1)">Borrar todo</button>
+    </div>
+    <button class="btn primary" id="helpClose">Entendido</button>
+  </div>
+</dialog>
+
+<input type="file" id="importFile" accept="application/json" hidden>
+
+<script>
+"use strict";
+/* ================================================================
+   Triple Foco — lógica de la aplicación
+   Combina: Matriz de Eisenhower + Método Ivy Lee + Cómete el Sapo
+   ================================================================ */
+
+const STORE = "tripleFoco.v1";
+
+/* Definición de los cuadrantes de Eisenhower */
+const QUADRANTS = {
+  q1: { emoji: "🔥", title: "Hazlo ya",   sub: "Urgente · Importante",        action: "Hazlo tú ahora",        important: true  },
+  q2: { emoji: "📅", title: "Planifica",  sub: "No urgente · Importante",      action: "Agéndalo, decide cuándo", important: true  },
+  q3: { emoji: "🤝", title: "Delega",     sub: "Urgente · No importante",      action: "Delégalo si puedes",    important: false },
+  q4: { emoji: "🗑️", title: "Elimina",    sub: "No urgente · No importante",   action: "Elimínalo o pospón",    important: false },
+};
+const Q_ORDER = ["q1", "q2", "q3", "q4"];
+const MAX_PLAN = 6;
+
+/* ---------------- Estado ---------------- */
+let state = {
+  tasks: [],            // {id,text,notes,quadrant,planned,order,done,createdAt}
+  view: "matriz",
+  theme: "auto",
+  planDate: todayKey(),
+};
+let pendingQuadrant = "q1"; // cuadrante seleccionado en la barra de añadir
+let editingId = null;
+
+/* ---------------- Utilidades ---------------- */
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+function todayKey() { const d = new Date(); return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate(); }
+function $(s, r = document) { return r.querySelector(s); }
+function $all(s, r = document) { return [...r.querySelectorAll(s)]; }
+function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c])); }
+
+let toastT;
+function toast(msg, emoji = "✅") {
+  const el = $("#toast");
+  el.innerHTML = `<span>${emoji}</span><span>${esc(msg)}</span>`;
+  el.classList.add("show");
+  clearTimeout(toastT);
+  toastT = setTimeout(() => el.classList.remove("show"), 2600);
+}
+
+/* ---------------- Persistencia ---------------- */
+function save() {
+  try { localStorage.setItem(STORE, JSON.stringify(state)); }
+  catch (e) { console.warn("No se pudo guardar:", e); }
+}
+function load() {
+  try {
+    const raw = localStorage.getItem(STORE);
+    if (raw) {
+      const d = JSON.parse(raw);
+      state = Object.assign(state, d);
+      if (!Array.isArray(state.tasks)) state.tasks = [];
+    }
+  } catch (e) { console.warn("No se pudo cargar:", e); }
+}
+
+/* ---------------- Selectores de datos ---------------- */
+function planned() {
+  return state.tasks.filter(t => t.planned).sort((a, b) => a.order - b.order);
+}
+function normalizeOrders() {
+  planned().forEach((t, i) => { t.order = i; });
+}
+function frogTask() {
+  const p = planned();
+  return p.length ? p[0] : null;
+}
+function activeTask() {
+  return planned().find(t => !t.done) || null;
+}
+
+/* ================================================================
+   Acciones sobre tareas
+   ================================================================ */
+function addTask(text, quadrant) {
+  text = text.trim();
+  if (!text) return;
+  state.tasks.unshift({
+    id: uid(), text, notes: "", quadrant,
+    planned: false, order: 0, done: false, createdAt: Date.now(),
+  });
+  save();
+}
+function deleteTask(id) {
+  const t = state.tasks.find(x => x.id === id);
+  state.tasks = state.tasks.filter(x => x.id !== id);
+  if (t && t.planned) normalizeOrders();
+  save();
+}
+function toggleDone(id) {
+  const t = state.tasks.find(x => x.id === id);
+  if (!t) return;
+  t.done = !t.done;
+  save();
+}
+function setQuadrant(id, q) {
+  const t = state.tasks.find(x => x.id === id);
+  if (t) { t.quadrant = q; save(); }
+}
+function togglePlan(id) {
+  const t = state.tasks.find(x => x.id === id);
+  if (!t) return;
+  if (t.planned) {
+    t.planned = false;
+    normalizeOrders();
+    save();
+  } else {
+    if (planned().length >= MAX_PLAN) {
+      toast(`Solo 6 tareas. Esa es la magia de Ivy Lee.`, "✋");
+      return;
+    }
+    t.planned = true;
+    t.order = planned().length; // al final
+    normalizeOrders();
+    save();
+  }
+}
+function movePlan(id, dir) {
+  const p = planned();
+  const i = p.findIndex(t => t.id === id);
+  const j = i + dir;
+  if (i < 0 || j < 0 || j >= p.length) return;
+  const tmp = p[i].order; p[i].order = p[j].order; p[j].order = tmp;
+  normalizeOrders();
+  save();
+}
+function reorderByIds(ids) {
+  ids.forEach((id, idx) => {
+    const t = state.tasks.find(x => x.id === id);
+    if (t) t.order = idx;
+  });
+  save();
+}
+
+/* Empezar nuevo día: archiva (elimina) lo completado, conserva lo pendiente.
+   Las tareas planificadas no terminadas se mantienen en el plan (arrastre Ivy Lee). */
+function startNewDay() {
+  const doneCount = state.tasks.filter(t => t.done).length;
+  state.tasks = state.tasks.filter(t => !t.done);
+  normalizeOrders();
+  state.planDate = todayKey();
+  resetTimer();
+  save();
+  render();
+  toast(doneCount ? `Nuevo día. ${doneCount} tarea(s) archivada(s).` : "¡Listo para un nuevo día!", "🌅");
+}
+
+/* ================================================================
+   Render
+   ================================================================ */
+function render() {
+  renderHeaderBits();
+  renderStepper();
+  if (state.view === "matriz") renderMatrix();
+  if (state.view === "plan") renderPlan();
+  if (state.view === "foco") renderFoco();
+}
+
+function renderHeaderBits() {
+  const d = new Date();
+  $("#datePill").textContent = d.toLocaleDateString("es-ES", { weekday: "long", day: "numeric", month: "long" });
+  $("#themeBtn").textContent = (document.documentElement.dataset.theme === "dark") ? "☀️" : "🌙";
+}
+
+function renderStepper() {
+  $all("#stepper .step").forEach(b => b.classList.toggle("active", b.dataset.view === state.view));
+  $all("section.view").forEach(s => { s.hidden = (s.id !== "view-" + state.view); });
+
+  const pending = state.tasks.filter(t => !t.done).length;
+  const p = planned();
+  const planDone = p.filter(t => t.done).length;
+  $("#badge-matriz").textContent = pending ? pending + " activas" : "";
+  $("#badge-plan").textContent = p.length ? p.length + "/6" : "";
+  $("#badge-foco").textContent = p.length ? planDone + "/" + p.length : "";
+}
+
+/* ---------- Vista 1: Matriz ---------- */
+function renderMatrix() {
+  const m = $("#matrix");
+  m.innerHTML = Q_ORDER.map(q => {
+    const def = QUADRANTS[q];
+    const list = state.tasks.filter(t => t.quadrant === q);
+    const items = list.length
+      ? list.map(taskCardHTML).join("")
+      : `<div class="q-empty">Sin tareas aquí</div>`;
+    return `
+      <div class="quadrant" data-q="${q}" style="--qc:var(--${q});--qsoft:var(--${q}-soft)">
+        <div class="q-head">
+          <div class="q-emoji">${def.emoji}</div>
+          <div class="q-titles"><strong>${def.title}</strong><small>${def.sub}</small></div>
+          <span class="q-count">${list.length}</span>
+        </div>
+        <div class="q-list" data-q="${q}">${items}</div>
+      </div>`;
+  }).join("");
+}
+
+function taskCardHTML(t) {
+  const inPlan = t.planned;
+  const isFrog = inPlan && frogTask() && frogTask().id === t.id;
+  return `
+    <div class="task ${t.done ? "done" : ""}" data-id="${t.id}" draggable="true">
+      <input type="checkbox" class="check" ${t.done ? "checked" : ""} aria-label="Completar" data-act="done">
+      <div class="task-body">
+        <div class="task-text" data-act="edit" title="Clic para editar">${esc(t.text)}</div>
+        ${(inPlan || t.notes) ? `<div class="task-meta">
+            ${isFrog ? `<span class="chip frog">🐸 Sapo</span>` : ""}
+            ${inPlan && !isFrog ? `<span class="chip plan">En el plan</span>` : ""}
+            ${t.notes ? `<span class="chip" style="background:var(--surface-3);color:var(--muted)">📝 nota</span>` : ""}
+          </div>` : ""}
+      </div>
+      <div class="task-actions">
+        <button class="mini add-plan ${inPlan ? "on" : ""}" data-act="plan" title="${inPlan ? "Quitar del plan" : "Añadir al plan del día"}">${inPlan ? "★" : "☆"}</button>
+        <button class="mini del" data-act="del" title="Eliminar">✕</button>
+      </div>
+    </div>`;
+}
+
+/* ---------- Vista 2: Plan (Ivy Lee) ---------- */
+function renderPlan() {
+  const p = planned();
+  const counter = $("#planCounter");
+  counter.textContent = p.length + "/" + MAX_PLAN;
+  counter.classList.toggle("full", p.length >= MAX_PLAN);
+
+  /* Disponibles: tareas no terminadas que no están en el plan.
+     Las importantes (q1,q2) primero. */
+  const avail = state.tasks
+    .filter(t => !t.planned && !t.done)
+    .sort((a, b) => (QUADRANTS[b.quadrant].important - QUADRANTS[a.quadrant].important) || (a.createdAt - b.createdAt));
+  const full = p.length >= MAX_PLAN;
+
+  $("#availList").innerHTML = avail.length ? avail.map(t => {
+    const def = QUADRANTS[t.quadrant];
+    return `<div class="avail" data-id="${t.id}" style="--qc:var(--${t.quadrant})">
+        <span class="av-text">${esc(t.text)}</span>
+        <span class="av-q">${def.title}</span>
+        <button class="btn primary sm" data-act="plan" ${full ? "disabled" : ""} title="${full ? "Plan completo (6/6)" : "Añadir al plan"}">＋</button>
+      </div>`;
+  }).join("") : `<div class="panel-empty">No hay más tareas disponibles.<br>Añade tareas en la <b>Matriz</b>.</div>`;
+
+  $("#planList").innerHTML = p.length ? p.map((t, i) => {
+    const isFrog = i === 0;
+    return `<div class="plan-item ${isFrog ? "is-frog" : ""}" data-id="${t.id}" draggable="true">
+        <span class="grip" title="Arrastra para reordenar">⠿</span>
+        <span class="rank">${i + 1}</span>
+        <span class="plan-text">${esc(t.text)}</span>
+        ${isFrog ? `<span class="frog-tag" title="Tu sapo del día">🐸</span>` : ""}
+        <div class="ord-btns">
+          <button class="btn sm" data-act="up" title="Subir" ${i === 0 ? "disabled" : ""}>▲</button>
+          <button class="btn sm" data-act="down" title="Bajar" ${i === p.length - 1 ? "disabled" : ""}>▼</button>
+        </div>
+        <button class="mini del" data-act="unplan" title="Quitar del plan">✕</button>
+      </div>`;
+  }).join("") : `<div class="plan-empty">Tu plan está vacío.<br>Añade hasta <b>6 tareas</b> desde la izquierda y ordénalas por prioridad.</div>`;
+}
+
+/* ---------- Vista 3: Foco (Cómete el sapo) ---------- */
+function renderFoco() {
+  const wrap = $("#focoWrap");
+  const p = planned();
+
+  if (!p.length) {
+    wrap.innerHTML = `<div class="card empty-foco">
+        <div class="big">🐸</div>
+        <h2>Aún no hay sapos que comer</h2>
+        <p>Ve al <b>Plan del día</b> y elige tus tareas más importantes. La #1 será tu sapo.</p>
+        <button class="btn primary" onclick="go('plan')">Ir al plan del día →</button>
+      </div>`;
+    return;
+  }
+
+  const done = p.filter(t => t.done).length;
+  const pct = Math.round((done / p.length) * 100);
+  const frog = p[0];
+  const active = activeTask();
+  const allDone = done === p.length;
+
+  /* Tarjeta de progreso */
+  let html = `
+    <div class="card progress-card">
+      <div class="progress-top">
+        <h3>Progreso del día</h3>
+        <span class="pct">${pct}%</span>
+      </div>
+      <div class="bar"><i style="width:${pct}%"></i></div>
+      <div class="progress-sub">${done} de ${p.length} tareas completadas${allDone ? " · ¡día redondo! 🎉" : ""}</div>
+    </div>`;
+
+  /* Tarjeta del sapo */
+  html += `
+    <div class="card frog-card ${frog.done ? "eaten" : ""}">
+      <span class="frog-label">🐸 Tu sapo · Tarea #1</span>
+      <div class="frog-main">
+        <div class="frog-emoji">${frog.done ? "🎉" : "🐸"}</div>
+        <div class="frog-info">
+          <h2 class="${frog.done ? "struck" : ""}">${esc(frog.text)}</h2>
+          <p>${frog.done ? "¡Te lo comiste! El resto del día es cuesta abajo." : "La tarea más importante y difícil. Cómetela antes que nada."}</p>
+          ${frog.notes ? `<p>📝 ${esc(frog.notes)}</p>` : ""}
+        </div>
+      </div>
+      <div class="frog-actions">
+        <button class="btn ${frog.done ? "" : "primary"}" data-id="${frog.id}" data-act="done">
+          ${frog.done ? "↩ Marcar pendiente" : "✓ ¡Comido!"}
+        </button>
+        ${timerHTML()}
+      </div>
+    </div>`;
+
+  /* Lista «a continuación»: el resto del plan, sin el sapo (ya destacado arriba) */
+  const rest = p.slice(1);
+  if (rest.length) {
+    html += `<div class="card uplist">
+        <h3>El resto del plan · de una en una</h3>
+        ${rest.map((t, i) => {
+          const isNext = active && active.id === t.id;
+          return `<div class="up-item ${t.done ? "done" : ""} ${isNext ? "next" : ""}" data-id="${t.id}">
+              <span class="up-rank">${t.done ? "✓" : i + 2}</span>
+              <span class="up-text">${esc(t.text)}</span>
+              ${isNext ? `<span class="up-now">En foco</span>` : ""}
+              <button class="btn sm ${t.done ? "ghost" : "primary"}" data-id="${t.id}" data-act="done">${t.done ? "Deshacer" : "Hecho"}</button>
+            </div>`;
+        }).join("")}
+      </div>`;
+  } else if (!frog.done) {
+    html += `<div class="card uplist"><h3>Solo tienes tu sapo hoy 🐸</h3>
+        <p style="color:var(--muted); font-size:.9rem; margin:0;">Cómetelo y habrás ganado el día. Menos es más.</p></div>`;
+  }
+
+  wrap.innerHTML = html;
+}
+
+/* ================================================================
+   Cronómetro de foco (en memoria, por sesión)
+   ================================================================ */
+let timer = { running: false, elapsed: 0, startedAt: 0, tick: null };
+function timerNow() { return timer.elapsed + (timer.running ? Date.now() - timer.startedAt : 0); }
+function fmt(ms) {
+  const s = Math.floor(ms / 1000);
+  const m = Math.floor(s / 60), ss = s % 60;
+  return String(m).padStart(2, "0") + ":" + String(ss).padStart(2, "0");
+}
+function timerHTML() {
+  return `<div class="timer">
+      <span class="tnum" id="tnum">${fmt(timerNow())}</span>
+      <div class="tctrl">
+        <button class="btn sm" data-act="timer-toggle">${timer.running ? "⏸" : "▶"}</button>
+        <button class="btn sm ghost" data-act="timer-reset">↺</button>
+      </div>
+    </div>`;
+}
+function timerLoop() {
+  const el = $("#tnum");
+  if (el) el.textContent = fmt(timerNow());
+}
+function startTimer() {
+  if (timer.running) return;
+  timer.running = true; timer.startedAt = Date.now();
+  timer.tick = setInterval(timerLoop, 250);
+}
+function pauseTimer() {
+  if (!timer.running) return;
+  timer.elapsed = timerNow(); timer.running = false;
+  clearInterval(timer.tick); timer.tick = null;
+}
+function resetTimer() {
+  pauseTimer(); timer.elapsed = 0; timerLoop();
+}
+
+/* ================================================================
+   Navegación
+   ================================================================ */
+function go(view) {
+  state.view = view;
+  save();
+  render();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+window.go = go;
+
+/* ================================================================
+   Modal de edición
+   ================================================================ */
+function openEdit(id) {
+  const t = state.tasks.find(x => x.id === id);
+  if (!t) return;
+  editingId = id;
+  $("#editText").value = t.text;
+  $("#editNotes").value = t.notes || "";
+  $("#editQPick").innerHTML = Q_ORDER.map(q => {
+    const def = QUADRANTS[q];
+    return `<button type="button" data-q="${q}" class="${t.quadrant === q ? "sel" : ""}" style="--qc:var(--${q});--qsoft:var(--${q}-soft)">
+        <div class="qp-t">${def.emoji} ${def.title}</div>
+        <div class="qp-s">${def.sub}</div>
+      </button>`;
+  }).join("");
+  $("#editModal").showModal();
+}
+$("#editQPick").addEventListener("click", e => {
+  const b = e.target.closest("button[data-q]"); if (!b) return;
+  $all("#editQPick button").forEach(x => x.classList.remove("sel"));
+  b.classList.add("sel");
+});
+$("#editForm").addEventListener("submit", e => {
+  const t = state.tasks.find(x => x.id === editingId);
+  if (t) {
+    const txt = $("#editText").value.trim();
+    if (txt) t.text = txt;
+    t.notes = $("#editNotes").value.trim();
+    const sel = $("#editQPick button.sel");
+    if (sel) t.quadrant = sel.dataset.q;
+    save(); render();
+  }
+});
+$("#editCancel").addEventListener("click", () => $("#editModal").close());
+
+/* ================================================================
+   Listeners de la barra de añadir
+   ================================================================ */
+$("#qSeg").addEventListener("click", e => {
+  const b = e.target.closest("button[data-q]"); if (!b) return;
+  pendingQuadrant = b.dataset.q;
+  $all("#qSeg button").forEach(x => x.classList.toggle("on", x === b));
+});
+function doAdd() {
+  const inp = $("#taskInput");
+  if (!inp.value.trim()) { inp.focus(); return; }
+  addTask(inp.value, pendingQuadrant);
+  inp.value = "";
+  inp.focus();
+  render();
+  toast("Tarea añadida a «" + QUADRANTS[pendingQuadrant].title + "»");
+}
+$("#addBtn").addEventListener("click", doAdd);
+$("#taskInput").addEventListener("keydown", e => { if (e.key === "Enter") doAdd(); });
+
+/* ================================================================
+   Delegación de eventos por vista
+   ================================================================ */
+/* Matriz */
+$("#matrix").addEventListener("click", e => {
+  const card = e.target.closest(".task"); if (!card) return;
+  const id = card.dataset.id;
+  const act = e.target.closest("[data-act]")?.dataset.act;
+  if (act === "done") { toggleDone(id); render(); }
+  else if (act === "del") { deleteTask(id); render(); toast("Tarea eliminada", "🗑️"); }
+  else if (act === "plan") { togglePlan(id); render(); }
+  else if (act === "edit") { openEdit(id); }
+});
+
+/* Plan */
+$("#availList").addEventListener("click", e => {
+  const row = e.target.closest(".avail"); if (!row) return;
+  if (e.target.closest('[data-act="plan"]')) { togglePlan(row.dataset.id); render(); }
+});
+$("#planList").addEventListener("click", e => {
+  const item = e.target.closest(".plan-item"); if (!item) return;
+  const id = item.dataset.id;
+  const act = e.target.closest("[data-act]")?.dataset.act;
+  if (act === "up") { movePlan(id, -1); render(); }
+  else if (act === "down") { movePlan(id, 1); render(); }
+  else if (act === "unplan") { togglePlan(id); render(); }
+});
+
+/* Foco */
+$("#focoWrap").addEventListener("click", e => {
+  const btn = e.target.closest("[data-act]"); if (!btn) return;
+  const act = btn.dataset.act;
+  if (act === "done") {
+    const id = btn.dataset.id;
+    const t = state.tasks.find(x => x.id === id);
+    const wasDone = t && t.done;
+    toggleDone(id);
+    render();
+    if (t && !wasDone) {
+      const isFrog = frogTask() && frogTask().id === id;
+      toast(isFrog ? "¡Sapo comido! 🐸 Lo más difícil ya está." : "¡Tarea hecha! A por la siguiente.", isFrog ? "🐸" : "✅");
+    }
+  } else if (act === "timer-toggle") {
+    timer.running ? pauseTimer() : startTimer();
+    render();
+  } else if (act === "timer-reset") {
+    resetTimer(); render();
+  }
+});
+$("#goFocoBtn").addEventListener("click", () => go("foco"));
+$("#newDayBtn").addEventListener("click", () => {
+  if (confirm("¿Empezar un nuevo día?\n\nSe archivarán las tareas completadas y se conservarán las pendientes en tu plan.")) {
+    startNewDay();
+  }
+});
+
+/* ================================================================
+   Arrastrar y soltar
+   ================================================================ */
+/* a) Reordenar el plan */
+(function planDnD() {
+  const list = $("#planList");
+  list.addEventListener("dragstart", e => {
+    const it = e.target.closest(".plan-item"); if (!it) return;
+    it.classList.add("dragging");
+    e.dataTransfer.effectAllowed = "move";
+  });
+  list.addEventListener("dragend", e => {
+    const it = e.target.closest(".plan-item"); if (it) it.classList.remove("dragging");
+  });
+  list.addEventListener("dragover", e => {
+    e.preventDefault();
+    const dragging = list.querySelector(".dragging"); if (!dragging) return;
+    const after = dragAfter(list, ".plan-item", e.clientY);
+    if (after == null) list.appendChild(dragging);
+    else list.insertBefore(dragging, after);
+  });
+  list.addEventListener("drop", e => {
+    e.preventDefault();
+    const ids = $all(".plan-item", list).map(el => el.dataset.id);
+    reorderByIds(ids);
+    render();
+  });
+})();
+
+/* b) Soltar una tarea de la matriz en otro cuadrante */
+(function matrixDnD() {
+  const m = $("#matrix");
+  let srcId = null;
+  m.addEventListener("dragstart", e => {
+    const t = e.target.closest(".task"); if (!t) return;
+    srcId = t.dataset.id; t.classList.add("dragging");
+    e.dataTransfer.effectAllowed = "move";
+  });
+  m.addEventListener("dragend", e => {
+    const t = e.target.closest(".task"); if (t) t.classList.remove("dragging");
+    $all(".quadrant", m).forEach(q => q.classList.remove("drop-on"));
+  });
+  m.addEventListener("dragover", e => {
+    const q = e.target.closest(".quadrant"); if (!q) return;
+    e.preventDefault();
+    $all(".quadrant", m).forEach(x => x.classList.toggle("drop-on", x === q));
+  });
+  m.addEventListener("drop", e => {
+    const q = e.target.closest(".quadrant"); if (!q || !srcId) return;
+    e.preventDefault();
+    setQuadrant(srcId, q.dataset.q);
+    srcId = null;
+    render();
+  });
+})();
+
+function dragAfter(container, sel, y) {
+  const els = [...container.querySelectorAll(sel + ":not(.dragging)")];
+  return els.reduce((closest, child) => {
+    const box = child.getBoundingClientRect();
+    const offset = y - box.top - box.height / 2;
+    if (offset < 0 && offset > closest.offset) return { offset, element: child };
+    return closest;
+  }, { offset: -Infinity, element: null }).element;
+}
+
+/* ================================================================
+   Stepper, tema, ayuda
+   ================================================================ */
+$("#stepper").addEventListener("click", e => {
+  const b = e.target.closest(".step"); if (!b) return;
+  go(b.dataset.view);
+});
+
+function applyTheme() {
+  const t = state.theme;
+  if (t === "auto") {
+    const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    document.documentElement.dataset.theme = dark ? "dark" : "light";
+  } else {
+    document.documentElement.dataset.theme = t;
+  }
+}
+$("#themeBtn").addEventListener("click", () => {
+  const cur = document.documentElement.dataset.theme;
+  state.theme = cur === "dark" ? "light" : "dark";
+  applyTheme(); save(); renderHeaderBits();
+});
+
+$("#helpBtn").addEventListener("click", () => $("#helpModal").showModal());
+$("#helpClose").addEventListener("click", () => $("#helpModal").close());
+
+/* Exportar / importar / borrar */
+$("#exportBtn").addEventListener("click", () => {
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "triple-foco-" + todayKey() + ".json";
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast("Datos exportados", "⤓");
+});
+$("#importBtn").addEventListener("click", () => $("#importFile").click());
+$("#importFile").addEventListener("change", e => {
+  const file = e.target.files[0]; if (!file) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try {
+      const d = JSON.parse(r.result);
+      if (!Array.isArray(d.tasks)) throw new Error("formato");
+      state = Object.assign({ view: "matriz", theme: "auto", planDate: todayKey() }, d);
+      applyTheme(); save(); render();
+      $("#helpModal").close();
+      toast("Datos importados", "⤒");
+    } catch (err) { toast("Archivo no válido", "⚠️"); }
+  };
+  r.readAsText(file);
+  e.target.value = "";
+});
+$("#resetBtn").addEventListener("click", () => {
+  if (confirm("¿Borrar TODAS las tareas y datos? Esta acción no se puede deshacer.")) {
+    state = { tasks: [], view: "matriz", theme: state.theme, planDate: todayKey() };
+    save(); render(); $("#helpModal").close();
+    toast("Todo borrado", "🗑️");
+  }
+});
+
+/* Atajos de teclado: 1/2/3 cambian de vista */
+document.addEventListener("keydown", e => {
+  if (e.target.matches("input, textarea")) return;
+  if (e.key === "1") go("matriz");
+  else if (e.key === "2") go("plan");
+  else if (e.key === "3") go("foco");
+});
+
+/* Reaccionar a cambios del tema del sistema cuando está en auto */
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+  if (state.theme === "auto") { applyTheme(); renderHeaderBits(); }
+});
+
+/* ================================================================
+   Datos de ejemplo (solo la primera vez)
+   ================================================================ */
+function seedIfEmpty() {
+  if (localStorage.getItem(STORE)) return;
+  const samples = [
+    ["Terminar la propuesta para el cliente (vence hoy)", "q1"],
+    ["Responder el correo urgente del jefe", "q1"],
+    ["Planificar la estrategia del próximo trimestre", "q2"],
+    ["Hacer ejercicio / cuidar la salud", "q2"],
+    ["Reservar el viaje de la conferencia", "q3"],
+    ["Revisar notificaciones de redes sociales", "q4"],
+  ];
+  samples.forEach(([text, q]) => state.tasks.push({
+    id: uid(), text, notes: "", quadrant: q, planned: false, order: 0, done: false, createdAt: Date.now() + Math.random(),
+  }));
+  save();
+}
+
+/* ================================================================
+   Arranque
+   ================================================================ */
+load();
+seedIfEmpty();
+applyTheme();
+if (!["matriz", "plan", "foco"].includes(state.view)) state.view = "matriz";
+render();
+$("#taskInput").focus();
+</script>
+</body>
+</html>
